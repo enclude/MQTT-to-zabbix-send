@@ -30,33 +30,26 @@ def connect_mqtt() -> mqtt_client:
 
 def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
-        # print("========================")
+        print("========================")
         mqtttopic = msg.topic
         mqtttopic = mqtttopic.lstrip("zigbee2mqtt/")
         mqttpayload = msg.payload.decode()
         mqttpayload = mqttpayload.replace("\\","")
+        print(mqtttopic, mqttpayload)
         # print("=")
 
-        if mqtttopic.find("logging") < 0:
-            if mqtttopic.find("ridge/") < 0:
-                # if mqtttopic.find("/set") < 0:
-                    # if mqtttopic.find("GROUND_TOILET_OCCUPANCY") < 0:
-                        # print(f"{mqttpayload} from {mqtttopic}")
-                if mqtttopic.find("availability") < 0:
+        data = json.loads(mqttpayload)
+        items = []
+        print("--------------")
+        print(mqtttopic)
 
-                    if mqtttopic in zabbixhosts:
-                        data = json.loads(mqttpayload)
-                        items = []
-                        print("--------------")
-                        print(mqtttopic)
-
-                        for key, value in data.items():
-                            print(key,value)
-                            item = ItemValue(mqtttopic, key, value)
-                            items.append(item)
-                        # print(items)
-                        response = sender.send(items)
-                        # print(response)
+        for key, value in data.items():
+            print(key,value)
+            item = ItemValue(mqtttopic, key, value)
+            items.append(item)
+        # print(items)
+        response = sender.send(items)
+        print(response)
 
     client.subscribe(topic)
     client.on_message = on_message
