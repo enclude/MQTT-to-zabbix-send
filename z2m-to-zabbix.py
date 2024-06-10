@@ -30,12 +30,10 @@ def connect_mqtt() -> mqtt_client:
 
 def subscribe(client: mqtt_client):
     def on_message(client, userdata, msg):
-        print("========================")
         mqtttopic = msg.topic
         mqtttopic = mqtttopic.lstrip("zigbee2mqtt/")
         mqttpayload = msg.payload.decode()
         mqttpayload = mqttpayload.replace("\\","")
-        print(mqtttopic, mqttpayload)
         # print("=")
 
         if mqtttopic.find("logging") < 0:
@@ -43,6 +41,8 @@ def subscribe(client: mqtt_client):
                 # if mqtttopic.find("/set") < 0:
                     # if mqtttopic.find("GROUND_TOILET_OCCUPANCY") < 0:
                         # print(f"{mqttpayload} from {mqtttopic}")
+                print("========================")
+                print(mqtttopic, mqttpayload)
                 if mqtttopic.find("availability") < 0:
 
                     if mqtttopic in zabbixhosts:
