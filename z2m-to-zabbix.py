@@ -38,18 +38,26 @@ def subscribe(client: mqtt_client):
         print(mqtttopic, mqttpayload)
         # print("=")
 
-        data = json.loads(mqttpayload)
-        items = []
-        print("--------------")
-        print(mqtttopic)
+        if mqtttopic.find("logging") < 0:
+            if mqtttopic.find("ridge/") < 0:
+                # if mqtttopic.find("/set") < 0:
+                    # if mqtttopic.find("GROUND_TOILET_OCCUPANCY") < 0:
+                        # print(f"{mqttpayload} from {mqtttopic}")
+                if mqtttopic.find("availability") < 0:
 
-        for key, value in data.items():
-            print(key,value)
-            item = ItemValue(mqtttopic, key, value)
-            items.append(item)
-        # print(items)
-        response = sender.send(items)
-        print(response)
+                    if mqtttopic in zabbixhosts:
+                        data = json.loads(mqttpayload)
+                        items = []
+                        print("--------------")
+                        print(mqtttopic)
+
+                        for key, value in data.items():
+                            print(key,value)
+                            item = ItemValue(mqtttopic, key, value)
+                            items.append(item)
+                        # print(items)
+                        response = sender.send(items)
+                        # print(response)
 
     client.subscribe(topic)
     client.on_message = on_message
