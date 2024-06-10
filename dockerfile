@@ -13,4 +13,4 @@ RUN pip3 install --no-cache-dir paho-mqtt
 RUN pip3 install --no-cache-dir zabbix_utils
 
 # Uruchamiamy skrypt Pythona po uruchomieniu kontenera
-CMD [ "python3", "./z2m-to-zabbix.py" ]
+CMD [ "python3", "-u", "./z2m-to-zabbix.py" ]
