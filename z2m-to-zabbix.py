@@ -10,11 +10,13 @@ client_id = os.environ['MQTT_clientid']
 from zabbix_utils import Sender,ZabbixAPI,ItemValue
 sender = Sender(os.environ['ZABBIX_address'],10051)
 
-api = ZabbixAPI(os.environ['ZABBIX_address'],10051)
-api.login(token=os.environ['ZABBIX_token'])
-zabbixhosts = api.host.get()
-temp = ' '.join(str(x) for x in zabbixhosts)
-zabbixhosts = temp
+#api = ZabbixAPI(os.environ['ZABBIX_address'],10051)
+#api.login(token=os.environ['ZABBIX_token'])
+# zabbixhosts = api.host.get()
+# temp = ' '.join(str(x) for x in zabbixhosts)
+zabbixhosts = " "
+
+print("OK :)")
 
 def connect_mqtt() -> mqtt_client:
     def on_connect(client, userdata, flags, rc):
@@ -34,30 +36,25 @@ def subscribe(client: mqtt_client):
         mqtttopic = mqtttopic.lstrip("zigbee2mqtt/")
         mqttpayload = msg.payload.decode()
         mqttpayload = mqttpayload.replace("\\","")
-        # print("=")
 
         if mqtttopic.find("logging") < 0:
             if mqtttopic.find("ridge/") < 0:
-                # if mqtttopic.find("/set") < 0:
-                    # if mqtttopic.find("GROUND_TOILET_OCCUPANCY") < 0:
-                        # print(f"{mqttpayload} from {mqtttopic}")
                 print("========================")
                 print(mqtttopic, mqttpayload)
                 if mqtttopic.find("availability") < 0:
 
-                    if mqtttopic in zabbixhosts:
-                        data = json.loads(mqttpayload)
-                        items = []
-                        print("--------------")
-                        print(mqtttopic)
+                    data = json.loads(mqttpayload)
+                    items = []
+                    print(mqtttopic)
 
-                        for key, value in data.items():
-                            print(key,value)
-                            item = ItemValue(mqtttopic, key, value)
-                            items.append(item)
-                        # print(items)
-                        response = sender.send(items)
-                        # print(response)
+                    for key, value in data.items():
+                        #print(key,value)
+                        item = ItemValue(mqtttopic, key, value)
+                        items.append(item)
+                    print(items)
+                    response = sender.send(items)
+                    print(response)
+                    print(response.details)
 
     client.subscribe(topic)
     client.on_message = on_message
